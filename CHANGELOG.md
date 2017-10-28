@@ -30,6 +30,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added socket option variant that enables the timestamp socket
   control message: `nix::sys::socket::sockopt::ReceiveTimestamp`
   ([#663](https://github.com/nix-rust/nix/pull/663))
+- Added more accessor methods for `AioCb`
+  ([#773](https://github.com/nix-rust/nix/pull/773))
+- Add nix::sys::fallocate
+  ([#768](https:://github.com/nix-rust/nix/pull/768))
+- Added `nix::unistd::mkfifo`.
+  ([#602](https://github.com/nix-rust/nix/pull/774))
 
 ### Changed
 - Renamed existing `ptrace` wrappers to encourage namespacing ([#692](https://github.com/nix-rust/nix/pull/692))
@@ -59,14 +65,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   ([#749](https://github.com/nix-rust/nix/pull/749))
 - `AioCb::Drop` will now panic if the `AioCb` is still in-progress ([#715](https://github.com/nix-rust/nix/pull/715))
 
-# Fixed
+### Fixed
 - Fix compilation and tests for OpenBSD targets
   ([#688](https://github.com/nix-rust/nix/pull/688))
 - Fixed error handling in `AioCb::fsync`, `AioCb::read`, and `AioCb::write`.
   It is no longer an error to drop an `AioCb` that failed to enqueue in the OS.
   ([#715](https://github.com/nix-rust/nix/pull/715))
 
-# Removed
+### Removed
 - The syscall module has been removed. This only exposed enough functionality for
   `memfd_create()` and `pivot_root()`, which are still exposed as separate functions.
   ([#747](https://github.com/nix-rust/nix/pull/747))

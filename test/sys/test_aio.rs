@@ -13,12 +13,34 @@ use std::{thread, time};
 use tempfile::tempfile;
 
 // Helper that polls an AioCb for completion or error
-fn poll_aio(mut aiocb: &mut AioCb) -> Result<()> {
+fn poll_aio(aiocb: &mut AioCb) -> Result<()> {
     loop {
         let err = aiocb.error();
         if err != Err(Error::from(Errno::EINPROGRESS)) { return err; };
         thread::sleep(time::Duration::from_millis(10));
     }
+}
+
+#[test]
+fn test_accessors() {
+    let mut rbuf = vec![0; 4];
+    let aiocb = AioCb::from_mut_slice( 1001,
+                           2,   //offset
+                           &mut rbuf,
+                           42,   //priority
+                           SigevNotify::SigevSignal {
+                               signal: Signal::SIGUSR2,
+                               si_value: 99
+                           },
+                           LioOpcode::LIO_NOP);
+    assert_eq!(1001, aiocb.fd());
+    assert_eq!(Some(LioOpcode::LIO_NOP), aiocb.lio_opcode());
+    assert_eq!(4, aiocb.nbytes());
+    assert_eq!(2, aiocb.offset());
+    assert_eq!(42, aiocb.priority());
+    let sev = aiocb.sigevent().sigevent();
+    assert_eq!(Signal::SIGUSR2 as i32, sev.sigev_signo);
+    assert_eq!(99, sev.sigev_value.sival_ptr as i64);
 }
 
 // Tests AioCb.cancel.  We aren't trying to test the OS's implementation, only our
